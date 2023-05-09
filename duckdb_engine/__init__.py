@@ -14,9 +14,8 @@ from typing import (
 )
 
 import duckdb
-from sqlalchemy import pool, text
+from sqlalchemy import pool, text, util
 from sqlalchemy import types as sqltypes
-from sqlalchemy import util
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql.base import PGInspector
 from sqlalchemy.dialects.postgresql.psycopg2 import PGDialect_psycopg2
@@ -53,12 +52,12 @@ class DBAPI:
 
 class DuckDBInspector(PGInspector):
     def get_check_constraints(
-        self, table_name: str, schema: Optional[str] = None, **kw: Any
+        self, table_name: str, schema: Optional[str] = None, **kw: Any,
     ) -> List[Dict[str, Any]]:
         try:
             return super().get_check_constraints(table_name, schema, **kw)
         except Exception as e:
-            raise NotImplementedError() from e
+            raise NotImplementedError from e
 
 
 class ConnectionWrapper:
@@ -69,7 +68,7 @@ class ConnectionWrapper:
 
     def __init__(self, c: duckdb.DuckDBPyConnection) -> None:
         self.__c = c
-        self.notices = list()
+        self.notices = []
 
     def cursor(self) -> "Connection":
         return self
@@ -86,7 +85,7 @@ class ConnectionWrapper:
             return cast(list, self.__c.fetch_df_chunk().values.tolist())
         except RuntimeError as e:
             if e.args[0].startswith(
-                "Invalid Input Error: Attempting to fetch from an unsuccessful or closed streaming query result"
+                "Invalid Input Error: Attempting to fetch from an unsuccessful or closed streaming query result",
             ):
                 return []
             else:
@@ -223,7 +222,7 @@ class Dialect(PGDialect_psycopg2):
         return (8, 0)
 
     def get_default_isolation_level(self, connection: "Connection") -> None:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def do_rollback(self, connection: "Connection") -> None:
         try:
@@ -247,7 +246,7 @@ class Dialect(PGDialect_psycopg2):
     ) -> Any:
         s = "SELECT table_name FROM information_schema.tables WHERE table_type='VIEW' and table_schema=:schema_name"
         rs = connection.execute(
-            text(s), {"schema_name": schema if schema is not None else "main"}
+            text(s), {"schema_name": schema if schema is not None else "main"},
         )
 
         return [row[0] for row in rs]
@@ -284,10 +283,10 @@ class Dialect(PGDialect_psycopg2):
         return cls.dbapi()
 
     def do_executemany(
-        self, cursor: Any, statement: Any, parameters: Any, context: Optional[Any] = ...
+        self, cursor: Any, statement: Any, parameters: Any, context: Optional[Any] = ...,
     ) -> None:
         return DefaultDialect.do_executemany(
-            self, cursor, statement, parameters, context
+            self, cursor, statement, parameters, context,
         )
 
     # FIXME: this method is a hack around the fact that we use a single cursor for all queries inside a connection,
@@ -301,8 +300,7 @@ class Dialect(PGDialect_psycopg2):
         kind: Optional[Tuple[str, ...]] = None,
         **kw: Any,
     ) -> List:
-        """
-        Copyright 2005-2023 SQLAlchemy authors and contributors <see AUTHORS file>.
+        """Copyright 2005-2023 SQLAlchemy authors and contributors <see AUTHORS file>.
 
         Permission is hereby granted, free of charge, to any person obtaining a copy of
         this software and associated documentation files (the "Software"), to deal in
@@ -322,7 +320,6 @@ class Dialect(PGDialect_psycopg2):
         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
         SOFTWARE.
         """
-
         has_filter_names, params = self._prepare_filter_names(filter_names)  # type: ignore[attr-defined]
         query = self._columns_query(schema, has_filter_names, scope, kind)  # type: ignore[attr-defined]
         rows = list(connection.execute(query, params).mappings())
@@ -332,7 +329,7 @@ class Dialect(PGDialect_psycopg2):
         domains = {
             ((d["schema"], d["name"]) if not d["visible"] else (d["name"],)): d
             for d in self._load_domains(  # type: ignore[attr-defined]
-                connection, schema="*", info_cache=kw.get("info_cache")
+                connection, schema="*", info_cache=kw.get("info_cache"),
             )
         }
 
@@ -343,7 +340,7 @@ class Dialect(PGDialect_psycopg2):
             if rec["visible"]
             else ((rec["schema"], rec["name"]), rec)
             for rec in self._load_enums(  # type: ignore[attr-defined]
-                connection, schema="*", info_cache=kw.get("info_cache")
+                connection, schema="*", info_cache=kw.get("info_cache"),
             )
         )
 

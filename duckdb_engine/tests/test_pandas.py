@@ -1,9 +1,6 @@
 #! /usr/bin/env python3
-# vim:fenc=utf-8
 
-"""
-Test pandas functionality.
-"""
+"""Test pandas functionality."""
 
 import pathlib
 import random
@@ -29,7 +26,7 @@ _possible_args = OrderedDict(
             None,
             "multi",
         ],  # TODO Implement a callable insert method?
-    }
+    },
 )
 
 args = {
@@ -38,7 +35,7 @@ args = {
 }
 params = {
     k: list(
-        product(*(_v for _k, _v in _possible_args.items() if _k in args[k]))  # type: ignore
+        product(*(_v for _k, _v in _possible_args.items() if _k in args[k])),  # type: ignore
     )
     for k in args
 }
@@ -56,7 +53,7 @@ sample_rowcount = max(
     for cs in cast(List[Optional[int]], _possible_args["chunksize"])
     if cs is not None
 )
-for i in range(sample_rowcount):
+for _i in range(sample_rowcount):
     sample_data["datetime"].append(datetime.utcnow())
     sample_data["int"].append(random.randint(0, 100))
     sample_data["float"].append(round(random.random(), 5))
@@ -130,7 +127,7 @@ def test_read_sql_duckdb_table(tmp_path: pathlib.Path) -> None:
     db = str(tmp_path / "test_db.duckdb")
     con = duckdb.connect(database=db, read_only=False)
     df = pd.DataFrame(
-        {"a": [1, 2, 3, 4], "b": [0.1, 0.2, 0.3, 0.4], "c": ["a", "b", "c", "d"]}
+        {"a": [1, 2, 3, 4], "b": [0.1, 0.2, 0.3, 0.4], "c": ["a", "b", "c", "d"]},
     )
     con.register("df_view", df)
     con.execute("CREATE TABLE test_data AS SELECT * FROM df_view;")

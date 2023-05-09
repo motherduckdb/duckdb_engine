@@ -9,12 +9,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 from sqlalchemy.types import JSON
 
-from ..datatypes import types
+from duckdb_engine.datatypes import types
 
 
 @mark.parametrize("coltype", types)
 def test_unsigned_integer_type(
-    engine: Engine, session: Session, coltype: Type[Integer]
+    engine: Engine, session: Session, coltype: Type[Integer],
 ) -> None:
     Base = declarative_base()
 
