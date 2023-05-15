@@ -18,7 +18,7 @@ from sqlalchemy import pool, text
 from sqlalchemy import types as sqltypes
 from sqlalchemy import util
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.dialects.postgresql.base import PGInspector
+from sqlalchemy.dialects.postgresql.base import PGDialect, PGInspector
 from sqlalchemy.dialects.postgresql.psycopg2 import PGDialect_psycopg2
 from sqlalchemy.engine.default import DefaultDialect
 from sqlalchemy.engine.url import URL
@@ -26,7 +26,7 @@ from sqlalchemy.engine.url import URL
 from .config import apply_config, get_core_config
 from .datatypes import register_extension_types
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 if TYPE_CHECKING:
     from sqlalchemy.base import Connection
@@ -174,7 +174,7 @@ class Dialect(PGDialect_psycopg2):
     inspector = DuckDBInspector
     # colspecs TODO: remap types to duckdb types
     colspecs = util.update_copy(
-        PGDialect_psycopg2.colspecs,
+        PGDialect.colspecs,
         {
             # the psycopg2 driver registers a _PGNumeric with custom logic for
             # postgres type_codes (such as 701 for float) that duckdb doesn't have
