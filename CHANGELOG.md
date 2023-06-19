@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.4](https://github.com/Mause/duckdb_engine/compare/v0.7.3...v0.7.4) (2023-06-19)
+
+
+### Bug Fixes
+
+* merge connect_args and url config ([3b6ef2d](https://github.com/Mause/duckdb_engine/commit/3b6ef2d59080a9547ba08eb855489864cf66bd28))
+* restore db override ([0a431a8](https://github.com/Mause/duckdb_engine/commit/0a431a8cfe1c92fadc6f130ba68b4a2dbe9d4a13))
+
 ## [0.7.3](https://github.com/Mause/duckdb_engine/compare/v0.7.2...v0.7.3) (2023-05-19)
 
 
